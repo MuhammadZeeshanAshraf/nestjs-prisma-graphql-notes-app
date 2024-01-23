@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Prisma, User } from '@prisma/client';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { CrudService } from 'src/common/abstract/crud.service';
+import { RESPONSE_STATUS } from 'src/common/constants';
+import { HandledErrorModel } from 'src/common/types/error';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { UserMapType } from './mapping/user.mapping';
 
 @Injectable()
 export class UserService extends CrudService<Prisma.UserDelegate, UserMapType> {
-    constructor(private prisma: PrismaService) {
+    constructor(private prisma: PrismaService, private jwtService: JwtService) {
         super(prisma.user);
     }
 
@@ -38,5 +42,28 @@ export class UserService extends CrudService<Prisma.UserDelegate, UserMapType> {
             },
         };
         return this.findMany(condition) as Promise<User[]>;
+    }
+
+    async login(loginUserDto: LoginUserDto) {
+        const { email, password } = loginUserDto;
+        const user = (await this.findUnique({
+            where: { email: email },
+        })) as User;
+        if (!user) {
+            const message = 'User not found';
+            return new HandledErrorModel(RESPONSE_STATUS.FAIL, message, new Error(message));
+        }
+        if (!(await compare(password, user.password))) {
+            const message = 'Invalid credentials';
+            return new HandledErrorModel(RESPONSE_STATUS.FAIL, message, new UnauthorizedException(message));
+        }
+
+        return {
+            access_token: await this.jwtService.signAsync({
+                sub: user.id,
+                email: user.email,
+                name: user.name,
+            }),
+        };
     }
 }

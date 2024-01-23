@@ -17,3 +17,8 @@ export const RESPONSE_MESSAGE = {
     INTERNAL_SERVER_ERROR:
         "We're sorry, but our server encountered an unexpected error while processing your request. Please try again later, or contact our support team if the problem persists. We apologize for any inconvenience this may have caused",
 };
+
+export const RESPONSE_STATUS = {
+    SUCCESS: true,
+    FAIL: false,
+};
