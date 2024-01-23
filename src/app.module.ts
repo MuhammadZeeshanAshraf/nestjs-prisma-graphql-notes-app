@@ -8,6 +8,8 @@ import { AppService } from './app.service';
 import { ServerMonitorCronModule } from './crons/server-monitor/server-monitor-cron.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { UserModule } from './modules/user/user.module';
+import { NoteModule } from './modules/note/note.module';
 
 @Module({
   imports: [
@@ -25,7 +27,9 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     }),
     /*Cron Modules*/
     ServerMonitorCronModule,
-    PrismaModule
+    PrismaModule,
+    UserModule,
+    NoteModule
   ],
   controllers: [AppController],
   providers: [
