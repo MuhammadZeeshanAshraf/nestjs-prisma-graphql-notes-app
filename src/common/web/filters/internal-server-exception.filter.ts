@@ -2,15 +2,14 @@ import {
     ArgumentsHost,
     BadRequestException,
     Catch,
+    ConflictException,
     ExceptionFilter,
     InternalServerErrorException,
 } from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Request, Response } from 'express';
 import { RESPONSE_MESSAGE } from 'src/common/constants';
-import {
-    InternalServerErrorModel,
-    ValidationFailedErrorModel,
-} from 'src/common/types/error';
+import { InternalServerErrorModel, ValidationFailedErrorModel } from 'src/common/types/error';
 import { ResponseFactory } from '../ResponseFactory';
 
 @Catch()
@@ -21,9 +20,7 @@ export class InternalServerExceptionFilter implements ExceptionFilter {
         const request = ctx.getRequest<Request>();
 
         let errorMessage = RESPONSE_MESSAGE.INTERNAL_SERVER_ERROR;
-        let response = ResponseFactory.createResponse(
-            new InternalServerErrorModel(errorMessage)
-        );
+        let response = ResponseFactory.createResponse(new InternalServerErrorModel(errorMessage));
 
         console.log(request.url);
         console.log(exception.constructor);
@@ -39,22 +36,21 @@ export class InternalServerExceptionFilter implements ExceptionFilter {
                               .toLowerCase()
                               .split(' ')
                               .map(function (word) {
-                                  return (
-                                      word.charAt(0).toUpperCase() +
-                                      word.slice(1)
-                                  );
+                                  return word.charAt(0).toUpperCase() + word.slice(1);
                               })
                               .join(' ');
-                response = ResponseFactory.createResponse(
-                    new ValidationFailedErrorModel(errorMessage)
-                );
+                response = ResponseFactory.createResponse(new ValidationFailedErrorModel(errorMessage));
                 break;
+            case PrismaClientKnownRequestError:
+                if (exception.code === 'P2002') {
+                    errorMessage = RESPONSE_MESSAGE.EMAIL_ERROR;
+                    response = ResponseFactory.createResponse(new ConflictException(errorMessage));
+                    break;
+                }
             case InternalServerErrorException:
             default:
                 errorMessage = RESPONSE_MESSAGE.INTERNAL_SERVER_ERROR;
-                response = ResponseFactory.createResponse(
-                    new InternalServerErrorModel(errorMessage)
-                );
+                response = ResponseFactory.createResponse(new InternalServerErrorModel(errorMessage));
         }
 
         return res.status(response.code).send(response);
