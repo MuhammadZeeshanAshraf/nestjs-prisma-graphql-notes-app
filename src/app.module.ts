@@ -11,33 +11,32 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
-  imports: [
-    ScheduleModule.forRoot(),
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    JwtModule.register({
-      global: true,
-      secret: 'zeeshan',
-      signOptions: { expiresIn: '1h' },
-    }),
-    /*Cron Modules*/
-    ServerMonitorCronModule,
-    PrismaModule,
-    UserModule,
-    NoteModule
-  ],
-  controllers: [AppController],
-  providers: [
-    AppService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
-  ],
+    imports: [
+        ScheduleModule.forRoot(),
+        ConfigModule.forRoot({
+            isGlobal: true,
+        }),
+        JwtModule.register({
+            global: true,
+            secret: process.env.JWT_SECRET,
+            signOptions: { expiresIn: process.env.JWT_EXPIRES },
+        }),
+        ServerMonitorCronModule,
+        PrismaModule,
+        UserModule,
+        NoteModule,
+    ],
+    controllers: [AppController],
+    providers: [
+        AppService,
+        // {
+        //   provide: APP_GUARD,
+        //   useClass: ThrottlerGuard,
+        // },
+    ],
 })
 export class AppModule implements NestModule {
-  configure(userContext: MiddlewareConsumer) {
-    userContext.apply(LoggerMiddleware).forRoutes('*');
-  }
+    configure(userContext: MiddlewareConsumer) {
+        userContext.apply(LoggerMiddleware).forRoutes('*');
+    }
 }
