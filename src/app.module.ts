@@ -5,8 +5,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { ServerMonitorCronModule } from './crons/server-monitor/server-monitor-cron.module';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { PrismaModule } from './modules/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { ServerMonitorCronModule } from './crons/server-monitor/server-monitor-c
       }),
     }),
     /*Cron Modules*/
-    ServerMonitorCronModule
+    ServerMonitorCronModule,
+    PrismaModule
   ],
   controllers: [AppController],
   providers: [
