@@ -39,18 +39,16 @@ cp .env.example .env
 
 environment variables file should contain the following 
 ```
-💻 #Environment
+#Environment
 NODE_ENV=
 PORT=
 
-💾 #Database
-DB_NAME=
-DB_USERNAME=
-DB_PASSWORD=
-DB_HOST=
-DB_PORT=
-DB_SCHEMA=
-DB_CONNECTION_NAME=
+
+#Database
+DATABASE_URL=
+
+JWT_SECRET=
+JWT_EXPIRES=
 ```
 
 Update the values in the `.env` file as needed for your environment.
