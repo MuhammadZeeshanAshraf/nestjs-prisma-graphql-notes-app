@@ -15,8 +15,8 @@ export abstract class CrudService<D extends Delegate, T extends CrudMapType> {
     return result;
   }
 
-  public async count(data: T['count']) {
-    const result = await this.delegate.count(data);
+  public async count(data: T['count']): Promise<number> {
+    const result = await this.delegate.count(data) as number;
     return result;
   }
 
@@ -40,8 +40,8 @@ export abstract class CrudService<D extends Delegate, T extends CrudMapType> {
     return result;
   }
 
-  public async findMany(data: T['findMany']) {
-    const result = await this.delegate.findMany(data);
+  public async findMany<X>(data: T['findMany']): Promise<X[]> {
+    const result = await this.delegate.findMany(data) as X[];
     return result;
   }
 

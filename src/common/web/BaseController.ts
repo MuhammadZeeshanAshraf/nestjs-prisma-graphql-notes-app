@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-import { JWT, NODE_ENV } from '../constants';
+import { NODE_ENV } from '../constants';
 import { ResponseFactory } from './ResponseFactory';
 
 
@@ -24,7 +24,6 @@ export class BaseController {
     const response = ResponseFactory.createResponse(
       result,
       successMessage,
-      environment
     );
 
     return res.status(response.code).send(response);

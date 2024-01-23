@@ -16,7 +16,6 @@ export class ResponseFactory {
   public static createResponse<T>(
     result: any,
     successMessage?: string,
-    environment?: any
   ) {
     if (result instanceof ErrorModel) {
       const stack = result.error && result.error.stack;
